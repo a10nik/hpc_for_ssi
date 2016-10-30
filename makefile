@@ -1,6 +1,6 @@
 BIN=./bin/
 SOURCE=./src/
-CFLAGS=-fopenmp
+CFLAGS=-fopenmp -std=c++14
 LIST=$(BIN)/hello
 CC=g++
 

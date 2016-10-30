@@ -45,9 +45,7 @@ int get_bucket_num(std::vector<int>& splitters, int number) {
     }
     return splitters.size();
 }
-
-void bubbleSort(std::vector<int>& a)
-{
+void bubble_sort(std::vector<int>& a) {
       bool swapped = true;
       while(swapped){
         swapped = false;
@@ -77,8 +75,8 @@ std::vector<int> par_sort(std::vector<int>& numbers) {
     #pragma omp parallel for
     for (int i = 0; i < buckets.size(); i++) {
         auto begin = clock();
-        //bubbleSort(buckets[i]);
-        std::sort(buckets[i].begin(), buckets[i].end());
+        bubble_sort(buckets[i]);
+        //std::sort(buckets[i].begin(), buckets[i].end());
         std::cout << "bucket " << i << ". " << ((clock() - begin) * 1000 / CLOCKS_PER_SEC) << ": sorted " << buckets[i].size() << "numbers \n";
     }
     std::cout << ((clock() - begin) * 1000 / CLOCKS_PER_SEC) << ": sorted buckets \n";

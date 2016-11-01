@@ -9,13 +9,6 @@
 #include <random>
 #include <ctime>
 
-void print_vector(std::vector<int>& numbers) {
-    for(int i: numbers) {
-        printf("%d ", i);
-    }
-    printf("\n");
-}
-
 std::vector<int> decimate(std::vector<int>& numbers, int step) {
     std::vector<int> res;
     for (int i = step; i < numbers.size(); i+=step) {
@@ -44,18 +37,6 @@ int get_bucket_num(std::vector<int>& splitters, int number) {
     }
     return splitters.size();
 }
-void bubble_sort(std::vector<int>& a) {
-      bool swapped = true;
-      while(swapped){
-        swapped = false;
-        for (size_t i = 0; i < a.size()-1; i++) {
-            if (a[i]>a[i+1] ){
-                std::swap(a[i], a[i+1]);
-                swapped = true;
-            }
-        }
-    }
-}
 
 std::vector<int> par_sort(std::vector<int>& numbers) {
     auto begin = clock();
@@ -64,6 +45,7 @@ std::vector<int> par_sort(std::vector<int>& numbers) {
     std::vector<std::vector<int>> buckets;
     for (int i = 0; i < threads; i++) {
         std::vector<int> bucket;
+        bucket.reserve(numbers.size() / threads * 2);
         buckets.push_back(bucket);
     }
     std::cout << ((clock() - begin) * 1000 / CLOCKS_PER_SEC) << ": initialized buckets \n";
@@ -74,12 +56,12 @@ std::vector<int> par_sort(std::vector<int>& numbers) {
     #pragma omp parallel for
     for (int i = 0; i < buckets.size(); i++) {
         auto begin = clock();
-        //bubble_sort(buckets[i]);
         std::sort(buckets[i].begin(), buckets[i].end());
         std::cout << "bucket " << i << ". " << ((clock() - begin) * 1000 / CLOCKS_PER_SEC) << ": sorted " << buckets[i].size() << "numbers \n";
     }
     std::cout << ((clock() - begin) * 1000 / CLOCKS_PER_SEC) << ": sorted buckets \n";
     std::vector<int> res;
+    res.reserve(numbers.size());
     for (auto b: buckets) {
         res.insert(res.end(), b.begin(), b.end());
     }

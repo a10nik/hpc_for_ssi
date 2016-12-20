@@ -54,6 +54,6 @@
 
 ##Delta-Stepping
 
-![small](plot/3.png)
-![medium](plot/2.png)
-![large](plot/1.png)
+![small](plots/3.png)
+![medium](plots/2.png)
+![large](plots/1.png)

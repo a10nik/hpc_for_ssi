@@ -51,3 +51,9 @@
 300 -> 1.02user 0.00system 0:00.59elapsed 173%CPU
 
 800 -> 17.24user 0.01system 0:05.35elapsed 322%CPU
+
+##Delta-Stepping
+
+![small](plot/3.png)
+![medium](plot/2.png)
+![large](plot/1.png)

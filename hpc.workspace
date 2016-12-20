@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="hpc" Database="">
+  <Project Name="matrix_mul" Path="matrix_mul/matrix_mul.project" Active="No"/>
+  <Project Name="parallel_sort" Path="parallel_sort/parallel_sort.project" Active="No"/>
+  <Project Name="delta_stepping" Path="delta_stepping/delta_stepping.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="no">
+      <Environment/>
+      <Project Name="delta_stepping" ConfigName="Debug"/>
+      <Project Name="matrix_mul" ConfigName="Debug"/>
+      <Project Name="parallel_sort" ConfigName="Debug"/>
+      <Project Name="delta_stepping" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Environment/>
+      <Project Name="delta_stepping" ConfigName="Release"/>
+      <Project Name="matrix_mul" ConfigName="Release"/>
+      <Project Name="parallel_sort" ConfigName="Release"/>
+      <Project Name="delta_stepping" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

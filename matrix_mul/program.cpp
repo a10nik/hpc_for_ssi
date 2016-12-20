@@ -21,11 +21,11 @@ public:
         return array[x + width * y];
     }
 
-    std::size_t width;
-    std::size_t height;
-
 private:
     std::vector<E> array;
+public:
+    std::size_t width;
+    std::size_t height;
 };
 
 void print_matrix(Matrix<double>& m) {
@@ -40,7 +40,7 @@ void print_matrix(Matrix<double>& m) {
 }
 
 std::shared_ptr<Matrix<double>> transpose(Matrix<double>& m) {
-    auto transposed = new Matrix<double>(m.width, m.height);
+    auto transposed = new Matrix<double>{m.width, m.height};
     for (int i = 0; i < m.height; i++) {
         for (int j = 0; j < m.width; j++) {
             (*transposed)(j, i) = m(i, j);

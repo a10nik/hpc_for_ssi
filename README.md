@@ -57,3 +57,8 @@
 ![small](plot/3.png)
 ![medium](plot/2.png)
 ![large](plot/1.png)
+
+##Multiple Shooting
+
+![time](plot/multi_shooting.png)
+![time](plot/multi_shooting_func.png)

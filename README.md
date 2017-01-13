@@ -54,11 +54,12 @@
 
 ##Delta-Stepping
 
-![small](plot/3.png)
-![medium](plot/2.png)
-![large](plot/1.png)
+![small](plots/3.png)
+![medium](plots/2.png)
+![large](plots/1.png)
 
 ##Multiple Shooting
 
-![time](plot/multi_shooting.png)
-![time](plot/multi_shooting_func.png)
+![time](plots/multi_shooting.png)
+![time](plots/multi_shooting_func.png)
+

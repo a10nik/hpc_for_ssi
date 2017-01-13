@@ -3,10 +3,10 @@
 ## any manual changes will be erased      
 ##
 ## Release
-ProjectName            :=delta_stepping
+ProjectName            :=multi_shooting
 ConfigurationName      :=Release
 WorkspacePath          :=/home/a10n/Workspace/hpc
-ProjectPath            :=/home/a10n/Workspace/hpc/delta_stepping
+ProjectPath            :=/home/a10n/Workspace/hpc/multi_shooting
 IntermediateDirectory  :=./Release
 OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
@@ -32,7 +32,7 @@ Preprocessors          :=$(PreprocessorSwitch)NDEBUG
 ObjectSwitch           :=-o 
 ArchiveOutputSwitch    := 
 PreprocessOnlySwitch   :=-E
-ObjectsFileList        :="delta_stepping.txt"
+ObjectsFileList        :="multi_shooting.txt"
 PCHCompileFlags        :=
 MakeDirCommand         :=mkdir -p
 LinkOptions            :=  -fopenmp
@@ -92,7 +92,7 @@ PreBuild:
 ## Objects
 ##
 $(IntermediateDirectory)/program.cpp$(ObjectSuffix): program.cpp $(IntermediateDirectory)/program.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/a10n/Workspace/hpc/delta_stepping/program.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/program.cpp$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/a10n/Workspace/hpc/multi_shooting/program.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/program.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/program.cpp$(DependSuffix): program.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/program.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/program.cpp$(DependSuffix) -MM program.cpp
 

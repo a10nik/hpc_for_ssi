@@ -2,7 +2,8 @@
 <CodeLite_Workspace Name="hpc" Database="">
   <Project Name="matrix_mul" Path="matrix_mul/matrix_mul.project" Active="No"/>
   <Project Name="parallel_sort" Path="parallel_sort/parallel_sort.project" Active="No"/>
-  <Project Name="delta_stepping" Path="delta_stepping/delta_stepping.project" Active="Yes"/>
+  <Project Name="delta_stepping" Path="delta_stepping/delta_stepping.project" Active="No"/>
+  <Project Name="multi_shooting" Path="multi_shooting/multi_shooting.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="no">
       <Environment/>
@@ -10,6 +11,7 @@
       <Project Name="matrix_mul" ConfigName="Debug"/>
       <Project Name="parallel_sort" ConfigName="Debug"/>
       <Project Name="delta_stepping" ConfigName="Debug"/>
+      <Project Name="multi_shooting" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
@@ -17,6 +19,7 @@
       <Project Name="matrix_mul" ConfigName="Release"/>
       <Project Name="parallel_sort" ConfigName="Release"/>
       <Project Name="delta_stepping" ConfigName="Release"/>
+      <Project Name="multi_shooting" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

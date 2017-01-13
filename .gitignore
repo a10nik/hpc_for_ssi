@@ -1,6 +1,6 @@
 *.o
 bin/
 .codelite/
-*.workspace~
+*~
 */Release/
 */Debug/

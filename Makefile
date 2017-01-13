@@ -1,8 +1,8 @@
 .PHONY: clean All
 
 All:
-	@echo "----------Building project:[ delta_stepping - Release ]----------"
-	@cd "delta_stepping" && "$(MAKE)" -f  "delta_stepping.mk"
+	@echo "----------Building project:[ multi_shooting - Release ]----------"
+	@cd "multi_shooting" && "$(MAKE)" -f  "multi_shooting.mk"
 clean:
-	@echo "----------Cleaning project:[ delta_stepping - Release ]----------"
-	@cd "delta_stepping" && "$(MAKE)" -f  "delta_stepping.mk" clean
+	@echo "----------Cleaning project:[ multi_shooting - Release ]----------"
+	@cd "multi_shooting" && "$(MAKE)" -f  "multi_shooting.mk" clean

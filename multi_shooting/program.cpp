@@ -257,8 +257,8 @@ int main(int argc, char *argv[]) {
     
     auto f = [](auto x, auto y){ return 1 / x * sin(x * y); };
     multi_shooting_config conf = {
-        segment_count: 100,
-        sequential_steps_in_segment_count: 1000000,
+        segment_count: 6,
+        sequential_steps_in_segment_count: 10,
         epsilon: 0.0001
     };
     auto from = 0.0001;
@@ -286,7 +286,7 @@ int main(int argc, char *argv[]) {
         
         auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
         std::cout << i << "-thread ended. time: " << dur << std::endl;        
-        //output_points_to_dat_file(*points, points_out_file);
+        output_points_to_dat_file(*points, points_out_file);
     }
 
 }

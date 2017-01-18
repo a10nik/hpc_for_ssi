@@ -24,8 +24,8 @@
 struct point { double x, y; };
 
 struct multi_shooting_config {
-    int segment_count;
-    int sequential_steps_in_segment_count;
+    size_t segment_count;
+    size_t sequential_steps_in_segment_count;
     double epsilon;
 };
 
@@ -129,23 +129,27 @@ std::shared_ptr<std::vector<double>> newton_method_find_root(std::vector<double>
         x_prev = x_curr;
         auto inv_jac_and_func = get_inv_jac_and_func(*x_curr);
         x_curr = add_vect(*x_curr, *inv_jac_and_func.inv_jac->mul_vect(*minus_vect(*inv_jac_and_func.func_val)));
+        
+        //for (auto i = 0; i < x_curr->size(); i ++)
+        //    std::cout << "\t" << (*x_curr)[i];
+        //std::cout << std::endl;
     }
     std::cout << "newton iterations " << i << std::endl;
     return x_curr;
     
 }
 
-struct segment_solution {
+struct right_y_with_deriv {
     double right_y, right_y_deriv;
-    
 };
 
-double segment_right_y_deriv(
+double segment_right_y_deriv_by_its_left_y(
                                             multi_shooting_config& conf,
                                             std::function<double(double, double)> f, 
                                             double x_left,
                                             double y_left,
                                             double x_right) {
+    
     auto dy0 = conf.epsilon;
     auto y_right_of_y0_plus_dy0 = midpoint_method(
                 1,
@@ -159,45 +163,36 @@ double segment_right_y_deriv(
             x_left,
             y_left,
             x_right)->back();
-    return (y_right_of_y0_plus_dy0.y - y_right_of_y0.y) / dy0;
+    return 
+        (y_right_of_y0_plus_dy0.y - y_right_of_y0.y) / dy0;
 }
 
-struct inv_jac_func_val_and_tentative_solution : inv_jac_and_func_val {
-    std::shared_ptr<std::vector<std::shared_ptr<std::vector<point>>>> segment_solutions;
-};
-
-inv_jac_func_val_and_tentative_solution mismatch_and_its_inv_jacobian(multi_shooting_config& conf,
+inv_jac_and_func_val mismatch_and_its_inv_jacobian(multi_shooting_config& conf,
                                             std::function<double(double, double)> f,
                                             double x0,
                                             double y0,
                                             double x_max,
                                             std::vector<double>& seg_y0s
                                             ) {
-    auto segment_width = (x_max - x0) / conf.segment_count;
     
-    std::shared_ptr<std::vector<std::shared_ptr<std::vector<point>>>> tentative_solution(
-        new std::vector<std::shared_ptr<std::vector<point>>>(conf.segment_count)
-    );
+    auto segment_width = (x_max - x0) / conf.segment_count;
     std::vector<double> mismatch_derivs(conf.segment_count - 1);
-    auto mismatch = new std::vector<double>(conf.segment_count);
+    std::shared_ptr<std::vector<double>> mismatch(new std::vector<double>(conf.segment_count));
     (*mismatch)[0] = seg_y0s[0] - y0;
     #pragma omp parallel for
-    for (auto i = 0; i < conf.segment_count; i++) {
+    for (size_t i = 0; i < conf.segment_count - 1; i++) {
         auto seg_x0 = i * segment_width + x0;
         auto seg_x_max = seg_x0 + segment_width;
         auto seg_y0 = seg_y0s[i];
-        auto seg_solution = midpoint_method(
+        auto seg_y_right = midpoint_method(
                 conf.sequential_steps_in_segment_count,
                 f,
                 seg_x0,
                 seg_y0,
-                seg_x_max);
-        (*tentative_solution)[i] = seg_solution;
-        if (i < conf.segment_count - 1) {
-            // the last seg does not have right boundary equations
-            mismatch_derivs[i] = segment_right_y_deriv(conf, f, seg_x0, seg_y0, seg_x_max);
-            (*mismatch)[i + 1] = seg_y0s[i + 1] - seg_solution->back().y;
-        }
+                seg_x_max)->back().y;
+            
+        mismatch_derivs[i] = segment_right_y_deriv_by_its_left_y(conf, f, seg_x0, seg_y0, seg_x_max);
+        (*mismatch)[i + 1] = seg_y0s[i + 1] - seg_y_right;
     }
     std::shared_ptr<matrix> jac(new matrix(conf.segment_count));
     #pragma omp parallel for
@@ -209,11 +204,7 @@ inv_jac_func_val_and_tentative_solution mismatch_and_its_inv_jacobian(multi_shoo
             jac->set(j, i, prod);
         }
     }
-    inv_jac_func_val_and_tentative_solution res;
-    res.func_val = std::shared_ptr<std::vector<double>>(mismatch);
-    res.inv_jac = jac;
-    res.segment_solutions = tentative_solution;
-    return res;
+    return inv_jac_and_func_val { mismatch, jac };
 }
 
 std::shared_ptr<std::vector<point>> multi_shooting_solve_ode(
@@ -222,21 +213,32 @@ std::shared_ptr<std::vector<point>> multi_shooting_solve_ode(
                                     double x0,
                                     double y0,
                                     double x_max) {
-                                        
-    std::vector<double> init_seg_y0s(conf.segment_count, y0);    
-    std::shared_ptr<std::vector<std::shared_ptr<std::vector<point>>>> tentative_solution;
-    auto mismatch_and_inv_jac = [&tentative_solution, &conf, f, x0, y0, x_max](auto seg_y0s) {
-        auto res =  mismatch_and_its_inv_jacobian(conf, f, x0, y0, x_max, seg_y0s);
-        tentative_solution = res.segment_solutions;
-        return res;
+   auto coarse_solution = *midpoint_method(
+                conf.segment_count,
+                f,
+                x0,
+                y0,
+                x_max);
+    std::vector<double> init_seg_y0s(conf.segment_count);
+    for (size_t i = 0; i < conf.segment_count; i++) {
+        init_seg_y0s[i] = coarse_solution[i].y;
+    }
+    auto mismatch_and_inv_jac = [&conf, f, x0, y0, x_max](auto seg_y0s) {
+        return mismatch_and_its_inv_jacobian(conf, f, x0, y0, x_max, seg_y0s);
     };
+    
     auto root_y0s = *newton_method_find_root(init_seg_y0s, conf.epsilon, mismatch_and_inv_jac);
+    
     std::shared_ptr<std::vector<point>> v(
         new std::vector<point>((conf.sequential_steps_in_segment_count + 1) * conf.segment_count)
     );
+    auto segment_width = (x_max - x0) / conf.segment_count;
     #pragma omp parallel for
-    for (size_t i = 0; i < tentative_solution->size(); i++) {
-        auto seg_solution = *(*tentative_solution)[i];
+    for (size_t i = 0; i < root_y0s.size(); i++) {
+        auto seg_x0 = i * segment_width + x0;
+        auto seg_y0 = root_y0s[i];
+        auto seg_x_max = seg_x0 + segment_width;
+        auto seg_solution = *midpoint_method(conf.sequential_steps_in_segment_count, f, seg_x0, seg_y0, seg_x_max);
         for (size_t j = 0; j < seg_solution.size(); j++) {
             (*v)[seg_solution.size() * i + j] = seg_solution[j];
         }
@@ -255,9 +257,9 @@ int main(int argc, char *argv[]) {
     
     auto f = [](auto x, auto y){ return 1 / x * sin(x * y); };
     multi_shooting_config conf = {
-        segment_count: 300,
-        sequential_steps_in_segment_count: 300000,
-        epsilon: 0.001
+        segment_count: 100,
+        sequential_steps_in_segment_count: 1000000,
+        epsilon: 0.0001
     };
     auto from = 0.0001;
     auto initial_value = 10;
@@ -273,10 +275,12 @@ int main(int argc, char *argv[]) {
     }
     
     int max = omp_get_max_threads();
-    for (auto i = 6; i <= max; i++) {
+    for (auto i = 1; i <= max; i++) {
         std::ofstream points_out_file("../multi_shooting.dat");
         omp_set_num_threads(i);
         auto start = std::chrono::system_clock::now();
+        
+        //auto points = midpoint_method(2000, f, from, initial_value, to);
         
         auto points = multi_shooting_solve_ode(conf, f, from, initial_value, to);
         
